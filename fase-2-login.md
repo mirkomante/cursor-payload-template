@@ -2,6 +2,8 @@
 
 > Dettaglio operativo. Riferimento decisionale completo: la specifica di autenticazione del progetto (es. `specifica-login-payloadcms.md` — nome da confermare in base al provider scelto). Riferimento comportamentale: tutte le regole in `.cursor/rules/`, in particolare `auth/01-autenticazione-invarianti.mdc` (+ variante provider auth scelta), `email/01-email-invarianti.mdc` (+ variante provider email scelta), `payload-pattern/02-convenzioni-payload.mdc` e `core/02-processo-lavoro-agente.mdc`.
 
+**Quando serve davvero una specifica di autenticazione dedicata**: questo file e le regole in `.cursor/rules/` già coprono schema `users`, allow-list, guardrail, `activityLog`, e — nel file di variante — il comportamento specifico del provider scelto. Una specifica di progetto separata (`docs/specifica-login-*.md`) va scritta **solo per le deviazioni** da questo standard (es. una policy password diversa, un ruolo `appRole` con permessi non banali, un requisito di compliance non coperto qui) — non per ripetere quanto è già generico in questo file e nelle regole. Se il progetto non devia da nulla, non serve nessuna specifica auth dedicata: questo file e le regole bastano da soli come riferimento.
+
 Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-generale.md` non appena completata.
 
 **Prerequisito**: Fase 1 chiusa (✅ su tutte le sottofasi in `fase-1-setup.md`).

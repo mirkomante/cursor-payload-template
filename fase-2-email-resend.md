@@ -7,6 +7,7 @@
 ## 2.6 (parte email) — Invio email di attivazione e reset password via Resend
 
 **Checklist**:
+- **Prima di procedere**: verificare la compatibilità della versione di `@payloadcms/email-resend` con la versione di Payload in uso in questo progetto — il comportamento sulla durata reale dei token descritto più sotto è stato verificato su una versione specifica e potrebbe differire su un'altra.
 - Configurare l'adapter `@payloadcms/email-resend` in `payload.config.ts`.
 - Variabili d'ambiente: `RESEND_API_KEY`, `RESEND_FROM_ADDRESS`, `RESEND_FROM_NAME` — in `.env`/`.env.example`, mai hardcoded.
 - Se l'autenticazione locale disabilita la strategia nativa Payload (`disableLocalStrategy`, spesso necessario per convivere con un login SSO sulla stessa collection — vedi `auth/01-autenticazione-invarianti.mdc`), il flusso automatico nativo di invio email all'attivazione **non parte da solo**: va agganciato esplicitamente via hook (es. `afterChange` al create di un utente locale).

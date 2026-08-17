@@ -30,7 +30,7 @@
 **Obiettivo**: login Google funzionante su `/admin`, con validazione dominio e whitelist-per-record.
 
 **Checklist**:
-- Installare `payload-oauth2`.
+- Installare `payload-oauth2`. **Prima di procedere**: verificare la compatibilità della versione del plugin con la versione di Payload in uso in questo progetto (changelog del plugin, issue aperte) — alcuni comportamenti documentati più sotto (il problema noto sul callback JWT) sono legati a versioni specifiche e potrebbero non applicarsi, o applicarsi diversamente, a una combinazione di versioni differente.
 - Configurare un'istanza del plugin dedicata all'Area Admin, con `strategyName`, `authorizePath` e `callbackPath` propri e distinti da quelli dell'istanza App (2.5) — requisito tecnico del plugin, non negoziabile.
 - Impostare `onUserNotFoundBehavior: "error"` per garantire la whitelist-per-record (nessun utente creato al volo).
 - Implementare `getUserInfo` in modo che restituisca **solo** `email` e `sub` — mai altri campi, per non rischiare di sovrascrivere `adminRole`/`appRole`/`active` ad ogni login (vedi `auth/01a-google-oauth.mdc`).

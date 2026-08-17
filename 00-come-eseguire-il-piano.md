@@ -40,6 +40,11 @@ Da allegare esplicitamente (riferendoli nel primo messaggio della chat, non nece
 3. **La sezione rilevante della specifica di progetto**, se la sottofase fa riferimento a una sezione specifica (ogni sottofase dei file di fase la cita già — basta chiedere a Composer di leggerla prima di procedere).
 4. **Non serve allegare `00-piano-generale.md`** in ogni chat: è utile solo quando si vuole dare una visione d'insieme, non per il lavoro puntuale su una sottofase.
 
+**Esempi di primo messaggio**:
+- Sottofase semplice: *"Leggi `docs/piano-sviluppo/fase-1-setup.md`, sottofase 1.1, e procedi."*
+- Sottofase a variante: *"Leggi `docs/piano-sviluppo/fase-1-setup.md`, sottofase 1.3, e `docs/piano-sviluppo/fase-1-db-mongodb.md`, e procedi."* — entrambi i file, il secondo contiene le istruzioni operative concrete.
+- Sottofasi accoppiate (vedi eccezione sopra): *"Leggi `docs/piano-sviluppo/fase-2-login.md`, sottofasi 2.4 e 2.5 insieme (due istanze dello stesso plugin OAuth, una per area — vanno tenute coerenti), e `docs/piano-sviluppo/fase-2-auth-google-oauth.md`, e procedi."*
+
 ## Durante la sessione
 
 - Far leggere a Composer il file di fase (e il file di variante, se pertinente) e la sezione di specifica **prima** di scrivere codice, non dopo.
