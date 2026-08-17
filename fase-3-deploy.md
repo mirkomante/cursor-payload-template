@@ -1,6 +1,6 @@
 # Fase 3 — Deploy
 
-> Dettaglio operativo. Riferimenti: `fase-1-setup.md` § 1.3 (percorso DB locale → produzione — vedi anche il file di variante DB), la specifica di autenticazione del progetto § spike cookie produzione. Riferimento comportamentale: tutte le regole in `.cursor/rules/`, in particolare `core/01-proporzionalita.mdc`, `core/02-processo-lavoro-agente.mdc`, e i file di variante DB/cloud/auth scelti per questo progetto.
+> Dettaglio operativo. Riferimenti: `fase-1-setup.md` § 1.3 (percorso DB locale → produzione — vedi anche il file di variante DB); lo spike cookie produzione (§ 3.3) è già descritto qui e nel file di variante auth, non richiede una specifica di progetto dedicata salvo deviazioni. Riferimento comportamentale: tutte le regole in `.cursor/rules/`, in particolare `core/01-proporzionalita.mdc`, `core/02-processo-lavoro-agente.mdc`, e i file di variante DB/cloud/auth scelti per questo progetto.
 
 Aggiornare lo stato di ogni sottofase qui sotto e in `00-piano-generale.md` non appena completata.
 

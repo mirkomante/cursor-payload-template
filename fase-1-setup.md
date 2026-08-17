@@ -1,6 +1,6 @@
 # Fase 1 — Setup progetto
 
-> Dettaglio operativo. Riferimento architetturale: la specifica di autenticazione/architettura del progetto (es. `specifica-login-payloadcms.md`, se il progetto adotta il pattern Google OAuth + PayloadCMS — nome file da confermare per il progetto specifico). Riferimento comportamentale: tutte le regole in `.cursor/rules/`, in particolare `01-architettura.mdc`, `01-proporzionalita.mdc` e `02-processo-lavoro-agente.mdc`.
+> Dettaglio operativo. L'architettura è già coperta da `payload-pattern/01-architettura.mdc` — non serve una specifica di progetto per questo. Se il progetto ha una specifica di autenticazione dedicata per deviazioni dallo standard (es. `specifica-login-payloadcms.md`), è rilevante solo a partire da Fase 2, non qui. Riferimento comportamentale: tutte le regole in `.cursor/rules/`, in particolare `01-architettura.mdc`, `01-proporzionalita.mdc` e `02-processo-lavoro-agente.mdc`.
 
 Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-generale.md` non appena completata.
 
