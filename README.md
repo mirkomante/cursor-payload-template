@@ -61,7 +61,7 @@ Procedura completa in `00-come-eseguire-il-piano.md` (Passo 0). In sintesi:
 | 3 | Cloud | Azure / AWS | `fase-3-cloud-*.md` | 🔲 da scrivere quando servirà | — |
 | 3 | Auth (produzione) | Google OAuth | `fase-3-auth-google-oauth.md` | ✅ pronta | Event Manager (2026-08) |
 
-> **Nota**: "Event Manager (2026-08)" è il progetto di origine da cui questi template sono stati estratti, non un riuso successivo. Aggiornare con progetto e data nuovi quando una variante viene effettivamente riusata in un progetto successivo.
+> **Nota**: "Event Manager (2026-08)" è il progetto di origine da cui questi template sono stati estratti, non un riuso successivo. Aggiornare con progetto e data nuovi quando una variante viene effettivamente riusata in un progetto successivo — sia che abbia funzionato senza modifiche, sia che il riuso abbia richiesto una correzione (tracciata da Git; qui si aggiorna comunque con la data del riuso che l'ha causata).
 
 ## Come aggiungere una nuova variante — checklist
 
