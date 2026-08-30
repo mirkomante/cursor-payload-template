@@ -1,3 +1,7 @@
+---
+stato: validato
+---
+
 # Fase 3 — Variante ambiente cloud: Google Cloud Run
 
 > Istruzioni operative per la sottofase **3.2 (Parte B — Secret Manager e Parte C — configurazione/deploy Cloud Run)** di `fase-3-deploy.md`, oltre ad alcuni dettagli cloud-specifici di 3.4 e 3.5. Da allegare insieme a `fase-3-deploy.md` nella chat dedicata a quella sottofase. Vedi anche `stack/01b-cloud-gcp.mdc` nel catalogo regole per le convenzioni architetturali che questa variante rispetta.

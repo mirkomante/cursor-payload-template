@@ -4,7 +4,7 @@
 
 ## Varianti adottate in questo progetto
 
-> Da compilare al Passo 0, prima di iniziare la Fase 1 (vedi `00-come-eseguire-il-piano.md`) — permette a chiunque, umano o agente, di sapere quali file di variante sono in gioco senza doverlo dedurre dal contenuto di `.cursor/rules/` o dei file di fase.
+> Da compilare al Passo 1, prima di iniziare la Fase 1 (vedi `00-come-eseguire-il-piano.md`) — permette a chiunque, umano o agente, di sapere quali file di variante sono in gioco senza doverlo dedurre dal contenuto di `.cursor/rules/` o dei file di fase.
 
 - **Provider auth**: `[es. Google OAuth]`
 - **Provider email**: `[es. Resend]`

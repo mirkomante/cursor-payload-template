@@ -1,3 +1,7 @@
+---
+stato: validato
+---
+
 # Fase 2 — Variante provider auth: Google OAuth
 
 > Istruzioni operative per le sottofasi **2.3, 2.4, 2.5** (e integrazione di **2.10**) di `fase-2-login.md`. Da allegare insieme a `fase-2-login.md` nella chat dedicata a quella sottofase. Vedi anche `auth/01a-google-oauth.mdc` nel catalogo regole per le convenzioni architetturali che questa variante rispetta.

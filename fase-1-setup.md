@@ -1,3 +1,7 @@
+---
+stato: validato
+---
+
 # Fase 1 — Setup progetto
 
 > Dettaglio operativo. L'architettura è già coperta da `payload-pattern/01-architettura.mdc` — non serve una specifica di progetto per questo. Se il progetto ha una specifica di autenticazione dedicata per deviazioni dallo standard (es. `specifica-login-payloadcms.md`), è rilevante solo a partire da Fase 2, non qui. Riferimento comportamentale: tutte le regole in `.cursor/rules/`, in particolare `01-architettura.mdc`, `01-proporzionalita.mdc` e `02-processo-lavoro-agente.mdc`.
@@ -122,3 +126,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 Al termine della Fase 1, prima di iniziare `fase-2-login.md`:
 - [ ] Confermare con l'umano che l'ambiente di sviluppo è stabile (nessun errore bloccante al riavvio).
 - [ ] Segnalare esplicitamente qualunque deviazione da questo piano avvenuta durante l'esecuzione (es. una versione di libreria diversa da quella prevista, un passaggio saltato, un cambio di package manager), così da tenerne conto in Fase 2.
+
+## Incoerenze note
+
+*(Nessuna al momento. Sezione per segnalare esplicitamente contraddizioni o ambiguità non risolte tra questo file e altri — vedi `processo-v2-operativo.md` §3, Balzer 1991.)*

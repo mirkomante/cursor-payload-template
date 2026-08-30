@@ -11,7 +11,8 @@ Origine: estratto e generalizzato dal progetto Event Manager (sessione di analis
 ```
 README.md
 00-piano-generale.md              indice di progetto — placeholder da compilare
-00-come-eseguire-il-piano.md      procedimento operativo per condurre le sessioni (Passo 0 incluso)
+00-come-eseguire-il-piano.md      procedimento operativo per condurre le sessioni (Passo 0 e Passo 1 inclusi)
+ADR-template.md                   template minimo ADR — uno per ogni arco di decisione del DAG di progetto
 CHANGELOG.md                      scheletro vuoto formato Keep a Changelog — da rinominare/spostare in docs/piano-sviluppo/ nel progetto reale
 
 fase-1-setup.md                   Fase 1 — Setup, master (provider/stack-agnostico)
@@ -39,9 +40,9 @@ fase-3-auth-google-oauth.md       variante provider auth (produzione)
 
 ## Come comporre `docs/piano-sviluppo/` per un nuovo progetto
 
-Procedura completa in `00-come-eseguire-il-piano.md` (Passo 0). In sintesi:
+Procedura completa in `00-come-eseguire-il-piano.md` (Passo 1 — la scelta delle varianti è Passo 0, precedente). In sintesi:
 
-1. Copiare sempre: `00-piano-generale.md`, `00-come-eseguire-il-piano.md`, `CHANGELOG.md` (vuoto, pronto all'uso), `fase-1-setup.md`, `fase-2-login.md`, `fase-3-deploy.md`.
+1. Copiare sempre: `00-piano-generale.md`, `00-come-eseguire-il-piano.md`, `ADR-template.md`, `CHANGELOG.md` (vuoto, pronto all'uso), `fase-1-setup.md`, `fase-2-login.md`, `fase-3-deploy.md`.
 2. Copiare, in base alle varianti scelte per il progetto (le stesse scelte in `cursor-rules`): un file `fase-1-db-*`, un file `fase-2-auth-*`, un file `fase-2-email-*`, un file `fase-3-db-*`, un file `fase-3-cloud-*`, un file `fase-3-auth-*`.
 3. Compilare in `00-piano-generale.md` i placeholder: nome progetto, sezione "Varianti adottate in questo progetto".
 4. Da Fase 4 in poi, scrivere da zero seguendo la stessa forma (struttura di sottofase) usata in Fase 1-3.

@@ -1,3 +1,7 @@
+---
+stato: validato
+---
+
 # Fase 1.3 — Variante database: MongoDB
 
 > Istruzioni operative per la sottofase **1.3** di `fase-1-setup.md`. Da allegare insieme a `fase-1-setup.md` nella chat dedicata a quella sottofase. Vedi anche `stack/01a-db-mongodb.mdc` nel catalogo regole per le convenzioni architetturali che questa variante rispetta (nome variabile d'ambiente, adapter).

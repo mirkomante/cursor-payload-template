@@ -1,3 +1,7 @@
+---
+stato: validato
+---
+
 # Fase 2 — Login
 
 > Dettaglio operativo. Riferimento comportamentale: tutte le regole in `.cursor/rules/`, in particolare `auth/01-autenticazione-invarianti.mdc` (+ variante provider auth scelta), `email/01-email-invarianti.mdc` (+ variante provider email scelta), `payload-pattern/02-convenzioni-payload.mdc` e `core/02-processo-lavoro-agente.mdc`. Su quando serve una specifica di progetto dedicata, vedi il paragrafo subito sotto.
@@ -188,3 +192,7 @@ Al termine della Fase 2, prima di iniziare `fase-3-deploy.md`:
 - [ ] Verificare che nessun test dev pendente sia rimasto "in sospeso silenzioso": se qualcosa è stato rimandato a Fase 3, deve essere esplicitamente scritto in `fase-3-deploy.md`, non solo nella cronologia della chat.
 
 Fuori scope di Fase 2 (salvo diversa indicazione della specifica di progetto): enforcement permessi per singola sezione App, evoluzione futura del provider SSO (es. cambio di modalità o migrazione a un provider diverso), eventType di `activityLog` non legati all'autenticazione.
+
+## Incoerenze note
+
+*(Nessuna al momento. Sezione per segnalare esplicitamente contraddizioni o ambiguità non risolte tra questo file e altri — vedi `processo-v2-operativo.md` §3, Balzer 1991.)*

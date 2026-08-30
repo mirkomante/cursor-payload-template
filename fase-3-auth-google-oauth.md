@@ -1,3 +1,7 @@
+---
+stato: validato
+---
+
 # Fase 3 — Variante provider auth: Google OAuth (produzione)
 
 > Istruzioni operative per la Parte A della sottofase **3.3** di `fase-3-deploy.md`. Da allegare insieme a `fase-3-deploy.md` nella chat dedicata a quella sottofase. Vedi anche `auth/01a-google-oauth.mdc` nel catalogo regole.

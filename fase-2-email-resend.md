@@ -1,3 +1,7 @@
+---
+stato: validato
+---
+
 # Fase 2 — Variante provider email: Resend
 
 > Istruzioni operative per la parte di invio email della sottofase **2.6** di `fase-2-login.md`. Da allegare insieme a `fase-2-login.md` nella chat dedicata a quella sottofase. Vedi anche `email/01a-resend.mdc` nel catalogo regole per le convenzioni che questa variante rispetta.

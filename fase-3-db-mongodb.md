@@ -1,3 +1,7 @@
+---
+stato: validato
+---
+
 # Fase 3 — Variante database: MongoDB (Atlas)
 
 > Istruzioni operative per la sottofase **3.1** di `fase-3-deploy.md`. Da allegare insieme a `fase-3-deploy.md` nella chat dedicata a quella sottofase. Vedi anche `stack/01a-db-mongodb.mdc` nel catalogo regole per le convenzioni architetturali che questa variante rispetta.
