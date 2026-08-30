@@ -20,6 +20,8 @@ Prima di comporre qualunque file:
    - **arco di decisione**: una scelta condiziona più fasi a valle (es. provider auth scelto in Fase 2 → condiziona anche Fase 3, spike cookie in produzione).
 3. Per **ogni arco di decisione** appena tipizzato, scrivere subito un ADR breve usando `ADR-template.md` — passo standard, non facoltativo. Vale anche per una scelta che resta dentro gli invarianti standard (`auth/`, `email/`, `stack/`), purché condizioni comunque più fasi a valle: "arco di decisione" e "deviazione dagli invarianti" si sovrappongono ma non coincidono, e basta la prima per richiedere l'ADR.
 
+   **ADR di catalogo vs ADR di progetto**: alcuni file master (es. `fase-2-login.md`) incorporano già decisioni valide per ogni progetto che adotta il template — restano nel repo catalogo come riferimento (es. `ADR-001-schema-ruoli-baseline.md`, `ADR-002-isolamento-istanze-sso.md`, `ADR-003-login-locale-app-default.md`), non si copiano a Passo 1. Se questo progetto **eredita** una di queste decisioni senza modificarla, non serve una nuova ADR: basta il rimando già presente nel file di fase. Se invece questo progetto **devia** da una decisione di catalogo (es. Area App solo-SSO invece di SSO+locale), quella deviazione è un'ADR di progetto a sé, che referenzia l'ADR di catalogo scartata invece di riscriverla.
+
 ## Passo 1 — Composizione
 
 Una volta prese le decisioni di Passo 0:

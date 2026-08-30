@@ -22,6 +22,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: unica collection `users` con lo schema definitivo dei ruoli, pronta ad accogliere sia utenti SSO sia utenti locali.
 
+> **Decisione documentata**: schema ruoli baseline (`adminRole`/`appRole` separati, non cumulabili) — vedi `ADR-001-schema-ruoli-baseline.md`. Un progetto che estende l'enum di `appRole` non ridiscute questa ADR, la eredita; una deviazione dalla separazione stessa richiede una nuova ADR di progetto che la referenzi.
+
 **Checklist**:
 - Creare la collection `users` con i campi: `email` (text, required, unique — funge anche da username per il login locale), `adminRole` (select singolo: none/admin/super-admin), `appRole` (select singolo: none/[ruoli App del progetto]), `active` (checkbox, default true).
 - Non aggiungere un campo `roles` cumulativo unico: i due ruoli sono campi separati, non cumulabili all'interno della stessa area.
@@ -78,6 +80,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: login tramite il provider SSO scelto funzionante su `/admin`, con validazione identità e whitelist-per-record.
 
+> **Decisione documentata**: isolamento delle istanze SSO tra Admin e App — vedi `ADR-002-isolamento-istanze-sso.md`.
+
 **Checklist di chiusura sottofase (valida per qualunque variante)**:
 - [ ] Il flusso rispetta tutti gli invarianti di `auth/01-autenticazione-invarianti.mdc` (whitelist-per-record, nessun autoprovisioning, messaggio di rifiuto generico, validazione lato server, mai toccare il campo `password`).
 - [ ] La login view standard di `/admin/login` mostra solo il pulsante del provider SSO — nessun form locale visibile qui.
@@ -92,6 +96,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: login tramite il provider SSO scelto funzionante su `/app`, stessa logica dell'istanza Admin ma su configurazione distinta.
 
+> **Decisione documentata**: stessa ADR di §2.4 — vedi `ADR-002-isolamento-istanze-sso.md`.
+
 **Checklist di chiusura sottofase (valida per qualunque variante)**:
 - [ ] Le due istanze (Admin e App) sono isolate (identificatori distinti), come richiesto da `auth/01-autenticazione-invarianti.mdc`.
 - [ ] Il bottone SSO sulla pagina di login custom dell'App usa questa istanza, non quella Admin.
@@ -103,6 +109,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Stato**: 🔲 da fare
 
 **Obiettivo**: form locale funzionante sotto `/app`, con verifica password nativa e invio email di attivazione/reset gestito dal provider email scelto per il progetto.
+
+> **Decisione documentata**: login locale come opzione standard (non solo emergenza) per l'Area App — vedi `ADR-003-login-locale-app-default.md`. Un progetto che vuole solo-SSO anche per l'App devia da questo default: richiede una nuova ADR di progetto che lo dichiari, non un'omissione silenziosa.
 
 **Checklist**:
 - Costruire la pagina di login custom dell'Area App con bottone del provider SSO (2.5) **e** form email/password.
