@@ -155,19 +155,20 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 ---
 
-## 2.9 — Collection `activityLog`
+## 2.9 — Collection `activityLog` (eventi di autenticazione)
 
 **Stato**: 🔲 da fare
 
 **Obiettivo**: log applicativo unico e condiviso tra Admin e App; eventi auth implementati: login, logout, accesso negato (con utente identificato).
 
+> **Meccanismo generale**: lo schema completo della collection `activityLog` e il pattern di popolamento via hook — inclusa la parte non legata all'auth (azioni CRUD su documenti, e perché non serve un log API separato: gli hook di collection intercettano già Local API/REST/GraphQL/Admin allo stesso modo) — sono definiti una volta sola in `payload-pattern/03-log-azioni.mdc`, non ripetuti qui. Questa sottofase **istanzia** quel meccanismo per gli eventi di autenticazione: i primi, e per questa fase gli unici, ad essere attivati.
+
 **Checklist**:
-- Creare la collection `activityLog` (non `loginEvents` — nome scelto per accogliere altri eventi futuri senza migrazione di schema).
-- Campi: `user` (relationship a `users`), `timestamp` (automatico), `area` (select: admin/app, opzionale), `eventType` (select: login/logout/accessDenied + altri eventi applicativi del progetto), `method` (select: sso/local, per eventi auth).
+- Creare la collection `activityLog` secondo lo schema generale di `payload-pattern/03-log-azioni.mdc` (non `loginEvents` — nome scelto per accogliere altri eventi futuri senza migrazione di schema). Per questa sottofase servono solo i campi lato auth dello schema: `user` (relationship a `users`), `timestamp` (automatico), `area` (select: admin/app, opzionale), `eventType` (login/logout/accessDenied), `method` (select: sso/local).
 - Popolare `activityLog` dall'hook `afterLogin` della collection `users` — si attiva indipendentemente da quale istanza/area ha autenticato, perché vive sulla collection e non sulla singola istanza del plugin/provider.
 - Popolare logout da hook `afterLogout`; accessi negati quando l'utente è identificato in `users`.
 - `area` e `method` derivano dal contesto della strategia/istanza che ha autenticato (identificatori distinti tra le istanze, 2.4/2.5, forniscono già questa informazione).
-- Non aggiungere campi generici per collegare l'evento a un record modificato (es. `targetRecord`, `previousValue`/`newValue`): emergeranno quando si progetteranno in dettaglio gli altri eventType, non vanno indovinati ora.
+- **Non attivare ancora** i campi `collection`/`documentId` dello schema generale, né agganciare hook di logging ad altre collection: restano fuori scope finché una specifica di progetto non richiede esplicitamente di tracciare azioni CRUD su una collection specifica — coerente con `core/01-proporzionalita.mdc` (vedi `payload-pattern/03-log-azioni.mdc`, sezione "Attivazione: decisione di progetto, non default"). Non è un'omissione silenziosa: è la stessa distinzione meccanismo/attivazione descritta lì, applicata qui.
 
 ---
 
@@ -199,7 +200,7 @@ Al termine della Fase 2, prima di iniziare `fase-3-deploy.md`:
 - [ ] Segnalare esplicitamente qualunque deviazione dal piano avvenuta durante l'esecuzione (es. un fix non previsto, un comportamento diverso da quello atteso in una libreria/plugin), così da tenerne conto nelle fasi successive.
 - [ ] Verificare che nessun test dev pendente sia rimasto "in sospeso silenzioso": se qualcosa è stato rimandato a Fase 3, deve essere esplicitamente scritto in `fase-3-deploy.md`, non solo nella cronologia della chat.
 
-Fuori scope di Fase 2 (salvo diversa indicazione della specifica di progetto): enforcement permessi per singola sezione App, evoluzione futura del provider SSO (es. cambio di modalità o migrazione a un provider diverso), eventType di `activityLog` non legati all'autenticazione.
+Fuori scope di Fase 2 (salvo diversa indicazione della specifica di progetto): enforcement permessi per singola sezione App, evoluzione futura del provider SSO (es. cambio di modalità o migrazione a un provider diverso), eventType di `activityLog` non legati all'autenticazione — schema e meccanismo generale per estenderli sono già pronti in `payload-pattern/03-log-azioni.mdc`, ma attivarli su una collection specifica resta una decisione di progetto esplicita, non implicita in questo file.
 
 ## Incoerenze note
 
