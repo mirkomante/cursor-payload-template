@@ -162,6 +162,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Obiettivo**: log applicativo unico e condiviso tra Admin e App; eventi auth implementati: login, logout, accesso negato (con utente identificato).
 
 > **Meccanismo generale**: lo schema completo della collection `activityLog` e il pattern di popolamento via hook — inclusa la parte non legata all'auth (azioni CRUD su documenti, e perché non serve un log API separato: gli hook di collection intercettano già Local API/REST/GraphQL/Admin allo stesso modo) — sono definiti una volta sola in `payload-pattern/03-log-azioni.mdc`, non ripetuti qui. Questa sottofase **istanzia** quel meccanismo per gli eventi di autenticazione: i primi, e per questa fase gli unici, ad essere attivati.
+>
+> **Dipendenza non ancora validata**: `payload-pattern/03-log-azioni.mdc` ha `stato: bozza` — non ha ancora superato la revisione standard (Composer + verifica meccanica). Lo schema sotto è affidabile per la parte auth (già in uso), ma verificare lo stato corrente del file prima di considerarlo un riferimento assestato per le parti non-auth.
 
 **Checklist**:
 - Creare la collection `activityLog` secondo lo schema generale di `payload-pattern/03-log-azioni.mdc` (non `loginEvents` — nome scelto per accogliere altri eventi futuri senza migrazione di schema). Per questa sottofase servono solo i campi lato auth dello schema: `user` (relationship a `users`), `timestamp` (automatico), `area` (select: admin/app, opzionale), `eventType` (login/logout/accessDenied), `method` (select: sso/local).

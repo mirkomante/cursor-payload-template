@@ -84,7 +84,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Obiettivo**: confermare che la struttura fisica del progetto rispecchi l'architettura di `01-architettura.mdc` prima di costruire qualunque funzionalità sopra.
 
 **Checklist**:
-- [ ] Verificare che dentro `/app` esistano, come cartelle separate e riconoscibili: il route group `(payload)` (auto-generato, non toccato) e il route group custom dell'Area App.
+- [ ] Verificare che dentro `/app` esistano, come cartelle separate e riconoscibili, tutti e tre i route group previsti da `01-architettura.mdc`: `(payload)` (auto-generato, non toccato), `(app)` custom dell'Area App, e `(frontend)` per il sito pubblico.
 - [ ] Verificare che non esista alcuna configurazione CORS, alcun secondo progetto, alcun deploy separato: un solo `package.json`, un solo processo di build.
 - [ ] Verificare che la cartella `/app` di progetto non venga confusa, in nessun file di configurazione o commento, con il path URL `/app` dell'Area App (sono due cose distinte).
 - [ ] Documentare in breve (commento o nota nel `README.md` del progetto) dove si trova cosa, per chi arriverà dopo.

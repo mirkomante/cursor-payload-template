@@ -119,7 +119,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e in `00-piano-generale.md` non 
 **Checklist**:
 - [ ] Checklist e2e completa in produzione: login SSO Admin, login SSO App, login locale App, accesso di emergenza super-admin, rifiuto identità non autorizzata, rifiuto utente non censito — tutti verificati tra § 3.3 e § 3.4.
 - [ ] Test pendenti eventualmente rimandati da Fase 2 § 2.10 (es. verifica record `logout`/`accessDenied` in `activityLog`): eseguiti qui se non già fatto.
-- [ ] Verificare che il logging applicativo (incluso `activityLog`) sia visibile nel sistema di logging nativo dell'ambiente cloud scelto, senza configurazione aggiuntiva necessaria (per il dettaglio specifico, vedi il file di variante cloud).
+- [ ] Verificare che il logging tecnico (richieste HTTP, errori applicativi) sia visibile nel sistema di logging nativo dell'ambiente cloud scelto, senza configurazione aggiuntiva necessaria (per il dettaglio specifico, vedi il file di variante cloud).
+- [ ] Verificare **separatamente** che i record `activityLog` siano consultabili (pannello Admin o query diretta alla collection): è un log applicativo su DB, canale distinto dal logging tecnico nativo del cloud — non vi compare per definizione (vedi `payload-pattern/03-log-azioni.mdc`).
 - [ ] **Alert minimi**: decidere esplicitamente se servono già a questa scala o se vanno rimandati (coerente con `core/01-proporzionalita.mdc`) — non lasciare la decisione implicita.
 - [ ] Build confermata OK dai deploy precedenti.
 - [ ] `00-piano-generale.md` aggiornato (Fase 3 → ✅); `CHANGELOG.md` bumpato alla versione corrispondente.
