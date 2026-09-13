@@ -15,12 +15,19 @@ Tre funzioni attraversano ogni sessione — non ruoli con autorità gerarchica t
 Prima di comporre qualunque file:
 
 1. Scegliere, per questo progetto: provider auth, provider email, database, ambiente cloud (vedi il catalogo `cursor-rules` per le opzioni disponibili). Package manager (pnpm) e UI kit di base (shadcn/ui) sono fissi, nessuna scelta da fare.
+
 2. Costruire il **DAG di progetto**: Claude lo produce direttamente come output di questa stessa sessione di pianificazione — non è filtrato da un catalogo. Ogni arco va tipizzato:
+
    - **arco di output**: una fase produce ciò che serve a un'altra (es. Fase 1 → Fase 2, ambiente locale pronto).
    - **arco di decisione**: una scelta condiziona più fasi a valle (es. provider auth scelto in Fase 2 → condiziona anche Fase 3, spike cookie in produzione).
+
 3. Per **ogni arco di decisione** appena tipizzato, scrivere subito un ADR breve usando `ADR-template.md` — passo standard, non facoltativo. Vale anche per una scelta che resta dentro gli invarianti standard (`auth/`, `email/`, `stack/`), purché condizioni comunque più fasi a valle: "arco di decisione" e "deviazione dagli invarianti" si sovrappongono ma non coincidono, e basta la prima per richiedere l'ADR.
 
    **ADR di catalogo vs ADR di progetto**: alcuni file master (es. `fase-2-login.md`) incorporano già decisioni valide per ogni progetto che adotta il template — restano nel repo catalogo come riferimento (es. `ADR-001-schema-ruoli-baseline.md`, `ADR-002-isolamento-istanze-sso.md`, `ADR-003-login-locale-app-default.md`), non si copiano a Passo 1. Se questo progetto **eredita** una di queste decisioni senza modificarla, non serve una nuova ADR: basta il rimando già presente nel file di fase. Se invece questo progetto **devia** da una decisione di catalogo (es. Area App solo-SSO invece di SSO+locale), quella deviazione è un'ADR di progetto a sé, che referenzia l'ADR di catalogo scartata invece di riscriverla.
+
+   **Numerazione**: le ADR di catalogo occupano esclusivamente il range `ADR-000`–`ADR-099`; ogni progetto numera le proprie ADR a partire da `ADR-100`. Se un progetto necessita di una seconda famiglia di ADR (per scala, o per un ambito distinto del progetto, es. Fase 4+ fuori template), la famiglia successiva riparte da `ADR-200`, poi `ADR-300`, e così via — mai a ritroso nel range `000`–`099` riservato al catalogo. Il catalogo, simmetricamente, non supera mai `ADR-099`: se in futuro servissero più di 99 ADR di catalogo (scenario oggi lontano, ne esistono 3), va aperta una sessione dedicata prima di sforare il range, non un'estensione silenziosa.
+
+   **Provenienza nei rimandi**: ogni nuovo rimando a un'ADR di catalogo in un file di fase riporta tra parentesi la provenienza (`ADR di catalogo, in cursor-payload-template`) — non solo il nome del file. Vale per ogni citazione futura, non solo per le tre esistenti in `fase-2-login.md`.
 
 ## Passo 1 — Composizione
 
@@ -70,6 +77,7 @@ Da allegare esplicitamente (riferendoli nel primo messaggio della chat, non nece
 4. **Non serve allegare `00-piano-generale.md`** in ogni chat: è utile solo quando si vuole dare una visione d'insieme, non per il lavoro puntuale su una sottofase.
 
 **Esempi di primo messaggio**:
+
 - Sottofase semplice: *"Leggi `docs/piano-sviluppo/fase-1-setup.md`, sottofase 1.1, e procedi."*
 - Sottofase a variante: *"Leggi `docs/piano-sviluppo/fase-1-setup.md`, sottofase 1.3, e `docs/piano-sviluppo/fase-1-db-mongodb.md`, e procedi."* — entrambi i file, il secondo contiene le istruzioni operative concrete.
 - Sottofasi accoppiate (vedi eccezione sopra): *"Leggi `docs/piano-sviluppo/fase-2-login.md`, sottofasi 2.4 e 2.5 insieme (due istanze dello stesso plugin OAuth, una per area — vanno tenute coerenti), e `docs/piano-sviluppo/fase-2-auth-google-oauth.md`, e procedi."*

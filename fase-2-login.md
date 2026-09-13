@@ -22,9 +22,10 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: unica collection `users` con lo schema definitivo dei ruoli, pronta ad accogliere sia utenti SSO sia utenti locali.
 
-> **Decisione documentata**: schema ruoli baseline (`adminRole`/`appRole` separati, non cumulabili) — vedi `ADR-001-schema-ruoli-baseline.md`. Un progetto che estende l'enum di `appRole` non ridiscute questa ADR, la eredita; una deviazione dalla separazione stessa richiede una nuova ADR di progetto che la referenzi.
+> **Decisione documentata**: schema ruoli baseline (`adminRole`/`appRole` separati, non cumulabili) — vedi `ADR-001-schema-ruoli-baseline.md` (ADR di catalogo, in `cursor-payload-template` — non cercarla nella cartella ADR di questo progetto). Un progetto che estende l'enum di `appRole` non ridiscute questa ADR, la eredita; una deviazione dalla separazione stessa richiede una nuova ADR di progetto che la referenzi.
 
 **Checklist**:
+
 - Creare la collection `users` con i campi: `email` (text, required, unique — funge anche da username per il login locale), `adminRole` (select singolo: none/admin/super-admin), `appRole` (select singolo: none/[ruoli App del progetto]), `active` (checkbox, default true).
 - Non aggiungere un campo `roles` cumulativo unico: i due ruoli sono campi separati, non cumulabili all'interno della stessa area.
 - Il campo `password` è gestito nativamente da Payload (auth abilitata sulla collection): non ricostruire un meccanismo di hashing custom.
@@ -43,6 +44,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Obiettivo**: allow-list delle identità autorizzate (domini, tenant, o equivalente a seconda del provider SSO scelto), gestita da pannello Admin, pronta a differenziare i permessi per area.
 
 **Checklist**:
+
 - Creare un Global (non una Collection) chiamato `Settings` o equivalente.
 - Campo array (non `hasMany` testuale) con sotto-campi: l'identificatore rilevante per il provider scelto (es. `domain` per Google Workspace) e flag per area (`allowAdmin`, `allowApp`).
 - Hook `beforeValidate`/`beforeChange`: trim, lowercase, validazione formato, prevenzione duplicati.
@@ -56,6 +58,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 ## 2.3 — Setup credenziali provider SSO
 
 > **Sottofase a variante (provider auth).** Le istruzioni operative dipendono dal provider scelto. Seguire il file corrispondente, poi tornare qui:
+>
 > - Google OAuth → `fase-2-auth-google-oauth.md`
 > - *(altri provider, quando disponibili nel catalogo)*
 
@@ -66,6 +69,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Questo è un passaggio esterno a Cursor.** Seguire la regola dedicata in `core/02-processo-lavoro-agente.mdc`: non assumere che sia già stato fatto, fermarsi e attendere conferma.
 
 **Checklist di chiusura sottofase (valida per qualunque variante — verificare dopo aver seguito il file di variante)**:
+
 - [ ] Credenziali (client ID/secret o equivalente) salvate come variabili d'ambiente, mai hardcoded.
 - [ ] `.gitignore` le esclude.
 - [ ] Documentata una nota operativa interna su dove/come si trovano queste credenziali, per chi gestirà il sistema in futuro.
@@ -80,9 +84,10 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: login tramite il provider SSO scelto funzionante su `/admin`, con validazione identità e whitelist-per-record.
 
-> **Decisione documentata**: isolamento delle istanze SSO tra Admin e App — vedi `ADR-002-isolamento-istanze-sso.md`.
+> **Decisione documentata**: isolamento delle istanze SSO tra Admin e App — vedi `ADR-002-isolamento-istanze-sso.md` (ADR di catalogo, in `cursor-payload-template`).
 
 **Checklist di chiusura sottofase (valida per qualunque variante)**:
+
 - [ ] Il flusso rispetta tutti gli invarianti di `auth/01-autenticazione-invarianti.mdc` (whitelist-per-record, nessun autoprovisioning, messaggio di rifiuto generico, validazione lato server, mai toccare il campo `password`).
 - [ ] La login view standard di `/admin/login` mostra solo il pulsante del provider SSO — nessun form locale visibile qui.
 
@@ -96,9 +101,10 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: login tramite il provider SSO scelto funzionante su `/app`, stessa logica dell'istanza Admin ma su configurazione distinta.
 
-> **Decisione documentata**: stessa ADR di §2.4 — vedi `ADR-002-isolamento-istanze-sso.md`.
+> **Decisione documentata**: stessa ADR di §2.4 — vedi `ADR-002-isolamento-istanze-sso.md` (ADR di catalogo, in `cursor-payload-template`).
 
 **Checklist di chiusura sottofase (valida per qualunque variante)**:
+
 - [ ] Le due istanze (Admin e App) sono isolate (identificatori distinti), come richiesto da `auth/01-autenticazione-invarianti.mdc`.
 - [ ] Il bottone SSO sulla pagina di login custom dell'App usa questa istanza, non quella Admin.
 
@@ -110,15 +116,17 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: form locale funzionante sotto `/app`, con verifica password nativa e invio email di attivazione/reset gestito dal provider email scelto per il progetto.
 
-> **Decisione documentata**: login locale come opzione standard (non solo emergenza) per l'Area App — vedi `ADR-003-login-locale-app-default.md`. Un progetto che vuole solo-SSO anche per l'App devia da questo default: richiede una nuova ADR di progetto che lo dichiari, non un'omissione silenziosa.
+> **Decisione documentata**: login locale come opzione standard (non solo emergenza) per l'Area App — vedi `ADR-003-login-locale-app-default.md` (ADR di catalogo, in `cursor-payload-template`). Un progetto che vuole solo-SSO anche per l'App devia da questo default: richiede una nuova ADR di progetto che lo dichiari, non un'omissione silenziosa.
 
 **Checklist**:
+
 - Costruire la pagina di login custom dell'Area App con bottone del provider SSO (2.5) **e** form email/password.
 - Verificare il flusso: ricerca utente per email → verifica password via strategia nativa Payload → verifica `active` → sessione. Se l'utente non ha password impostata (solo SSO) o la password non combacia, il fallimento deve essere naturale (nessun caso speciale da gestire esplicitamente).
 - Il controllo identità/allow-list (2.2) **non si applica** al login locale: verificare che non venga richiamato per errore in questo percorso.
 - Messaggio di rifiuto identico a quello del flusso SSO in ogni caso di fallimento.
 
 > **Invio email (variante provider email)**: la configurazione del provider email transazionale per l'invio automatico all'attivazione utente e al reset password è trattata nel file di variante corrispondente, da seguire poi tornare qui:
+>
 > - Resend → `fase-2-email-resend.md`
 > - *(altri provider, quando disponibili nel catalogo)*
 >
@@ -133,6 +141,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Obiettivo**: via di accesso locale riservata al super-admin di bootstrap, non raggiungibile da alcun link visibile.
 
 **Checklist**:
+
 - Creare la route `/admin/login/local` (o percorso equivalente), non linkata da nessuna UI standard di Payload né dell'App.
 - Deve usare la stessa strategia nativa di Payload per il login locale, non un sistema a parte.
 - Verificare che sia accessibile **solo** digitando l'URL direttamente, non tramite navigazione da `/admin/login`.
@@ -147,6 +156,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Obiettivo**: primo super-admin creato in modo ripetibile, e i due vincoli minimi di sicurezza attivi.
 
 **Checklist**:
+
 - Scrivere uno script di seed che crei un utente super-admin locale (email + password fornite come parametri o variabili d'ambiente, non hardcoded nel codice sorgente).
 - Implementare il vincolo: non è possibile eliminare o disattivare (`active = false`) l'ultimo super-admin locale rimasto — validazione applicativa sulla collection `users`.
 - Implementare il vincolo: non è possibile salvare l'allow-list identità (Global, 2.2) se risulterebbe vuota.
@@ -166,6 +176,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 > **Dipendenza non ancora validata**: `payload-pattern/03-log-azioni.mdc` ha `stato: bozza` — non ha ancora superato la revisione standard (Composer + verifica meccanica). Lo schema sotto è affidabile per la parte auth (già in uso), ma verificare lo stato corrente del file prima di considerarlo un riferimento assestato per le parti non-auth.
 
 **Checklist**:
+
 - Creare la collection `activityLog` secondo lo schema generale di `payload-pattern/03-log-azioni.mdc` (non `loginEvents` — nome scelto per accogliere altri eventi futuri senza migrazione di schema). Per questa sottofase servono solo i campi lato auth dello schema: `user` (relationship a `users`), `timestamp` (automatico), `area` (select: admin/app, opzionale), `eventType` (login/logout/accessDenied), `method` (select: sso/local).
 - Popolare `activityLog` dall'hook `afterLogin` della collection `users` — si attiva indipendentemente da quale istanza/area ha autenticato, perché vive sulla collection e non sulla singola istanza del plugin/provider.
 - Popolare logout da hook `afterLogout`; accessi negati quando l'utente è identificato in `users`.
@@ -183,6 +194,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Questo passaggio richiede credenziali/ambiente reali (vedi 2.3) — coordinarsi con l'umano prima di eseguirlo.**
 
 **Checklist**:
+
 1. Avviare l'app in locale con le due istanze del provider SSO configurate (Admin e App).
 2. Creare un record utente in `users` con identità reale, ruolo admin o super-admin (o richiedere all'umano di indicarne uno esistente).
 3. Login SSO su `/admin`: verificare autenticazione riuscita e che il cookie autentichi anche una chiamata REST (es. endpoint utente corrente).
@@ -198,6 +210,7 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 ## Note di chiusura fase
 
 Al termine della Fase 2, prima di iniziare `fase-3-deploy.md`:
+
 - [ ] Sottofasi 2.1–2.10 marcate ✅ in questo file e in `00-piano-generale.md` (il punto 7 di 2.10, se rimandato a Fase 3, va segnalato esplicitamente come tale, non semplicemente ✅).
 - [ ] Segnalare esplicitamente qualunque deviazione dal piano avvenuta durante l'esecuzione (es. un fix non previsto, un comportamento diverso da quello atteso in una libreria/plugin), così da tenerne conto nelle fasi successive.
 - [ ] Verificare che nessun test dev pendente sia rimasto "in sospeso silenzioso": se qualcosa è stato rimandato a Fase 3, deve essere esplicitamente scritto in `fase-3-deploy.md`, non solo nella cronologia della chat.
