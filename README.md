@@ -17,6 +17,7 @@ CHANGELOG.md                      scheletro vuoto formato Keep a Changelog — d
 
 fase-1-setup.md                   Fase 1 — Setup, master (provider/stack-agnostico)
 fase-1-db-mongodb.md              variante database
+fase-1-db-postgres.md             variante database
 
 fase-2-login.md                   Fase 2 — Login, master
 fase-2-auth-google-oauth.md       variante provider auth
@@ -24,6 +25,7 @@ fase-2-email-resend.md            variante provider email
 
 fase-3-deploy.md                  Fase 3 — Deploy, master
 fase-3-db-mongodb.md              variante database
+fase-3-db-postgres.md             variante database
 fase-3-cloud-gcp.md               variante ambiente cloud
 fase-3-auth-google-oauth.md       variante provider auth (produzione)
 
@@ -49,20 +51,21 @@ Procedura completa in `00-come-eseguire-il-piano.md` (Passo 1 — la scelta dell
 
 ## Catalogo varianti — stato attuale
 
-| Fase | Asse | Variante | File | Stato | Ultima verifica su progetto reale |
+| Fase | Asse | Variante | File | Stato | Ultima scrittura/riuso confermato |
 |---|---|---|---|---|---|
-| 1 | Database | MongoDB | `fase-1-db-mongodb.md` | ✅ pronta | Event Manager (2026-08) |
-| 1 | Database | PostgreSQL | `fase-1-db-postgres.md` | 🔲 da scrivere quando servirà | — |
-| 2 | Auth | Google OAuth | `fase-2-auth-google-oauth.md` | ✅ pronta | Event Manager (2026-08) |
+| 1 | Database | MongoDB | `fase-1-db-mongodb.md` | ✅ pronta | 2026-08 |
+| 1 | Database | PostgreSQL | `fase-1-db-postgres.md` | ✅ pronta | 2026-09 |
+| 2 | Auth | Google OAuth | `fase-2-auth-google-oauth.md` | ✅ pronta | 2026-08 |
 | 2 | Auth | Altro provider | `fase-2-auth-*.md` | 🔲 da scrivere quando servirà | — |
-| 2 | Email | Resend | `fase-2-email-resend.md` | ✅ pronta | Event Manager (2026-08) |
+| 2 | Email | Resend | `fase-2-email-resend.md` | ✅ pronta | 2026-08 |
 | 2 | Email | Altro provider | `fase-2-email-*.md` | 🔲 da scrivere quando servirà | — |
-| 3 | Database | MongoDB | `fase-3-db-mongodb.md` | ✅ pronta | Event Manager (2026-08) |
-| 3 | Cloud | Google Cloud Run | `fase-3-cloud-gcp.md` | ✅ pronta | Event Manager (2026-08) |
+| 3 | Database | MongoDB | `fase-3-db-mongodb.md` | ✅ pronta | 2026-08 |
+| 3 | Database | PostgreSQL | `fase-3-db-postgres.md` | ✅ pronta | 2026-09 |
+| 3 | Cloud | Google Cloud Run | `fase-3-cloud-gcp.md` | ✅ pronta | 2026-08 |
 | 3 | Cloud | Azure / AWS | `fase-3-cloud-*.md` | 🔲 da scrivere quando servirà | — |
-| 3 | Auth (produzione) | Google OAuth | `fase-3-auth-google-oauth.md` | ✅ pronta | Event Manager (2026-08) |
+| 3 | Auth (produzione) | Google OAuth | `fase-3-auth-google-oauth.md` | ✅ pronta | 2026-08 |
 
-> **Nota**: "Event Manager (2026-08)" è il progetto di origine da cui questi template sono stati estratti, non un riuso successivo. Aggiornare con progetto e data nuovi quando una variante viene effettivamente riusata in un progetto successivo — sia che abbia funzionato senza modifiche, sia che il riuso abbia richiesto una correzione (tracciata da Git; qui si aggiorna comunque con la data del riuso che l'ha causata).
+> **Nota**: la colonna riporta solo la data dell'ultima scrittura o riuso confermato — non il progetto specifico. La provenienza per progetto è tracciata separatamente, fuori da questo repository. Aggiornare la data quando una variante viene effettivamente riusata in un progetto successivo — sia che abbia funzionato senza modifiche, sia che il riuso abbia richiesto una correzione (tracciata da Git; qui si aggiorna comunque con la data del riuso che l'ha causata).
 
 ## Come aggiungere una nuova variante — checklist
 
@@ -82,6 +85,8 @@ Procedura completa in `00-come-eseguire-il-piano.md` (Passo 1 — la scelta dell
 - **Non aggiunta una bozza di `specifica-login-payloadcms.md`** (proposta da una revisione esterna): quasi tutto il contenuto della specifica originale di Event Manager è già assorbito in `auth/`, `fase-2-login.md` e `fase-2-auth-google-oauth.md` — ricrearne uno scheletro rischierebbe di duplicare le stesse decisioni in due posti. Aggiunta invece una riga in testa a `fase-2-login.md`: una specifica di progetto dedicata va scritta solo per le deviazioni dallo standard, non per ripeterlo; se il progetto non devia, non serve alcuna specifica auth. *(2026-08-17)*
 - **Passata di coerenza terminologica** (segnalata da una revisione esterna, seconda verifica): tre riferimenti residui presentavano ancora la specifica auth come riferimento presupposto/obbligatorio, in contraddizione con la nota appena aggiunta — corretti con formulazione condizionale in `fase-1-setup.md` (l'architettura vive in `payload-pattern/01-architettura.mdc`, non nella specifica), `fase-2-login.md` (blockquote iniziale), `fase-3-deploy.md` (spike cookie già coperto qui) e `00-piano-generale.md` (le specifiche servono solo per le deviazioni, non come riferimento sempre presente). *(2026-08-17)*
 - **`fase-2-login.md` §2.9 ristretto ai soli eventi di autenticazione**, con rimando esplicito al nuovo meccanismo generale di `activityLog` in `cursor-rules` (`payload-pattern/03-log-azioni.mdc`): schema e hook non sono più ripetuti qui, questa sottofase si limita a istanziarli per login/logout/accessDenied. Aggiunta anche una riga esplicita che l'attivazione dei campi `collection`/`documentId` e l'aggancio a collection diverse da `users` restano fuori scope di Fase 2, come decisione di progetto da dichiarare — non un'omissione silenziosa. Nota di chiusura fase aggiornata di conseguenza. *(2026-08-31)*
+- **Nuove varianti database `fase-1-db-postgres.md` e `fase-3-db-postgres.md`**, richieste da un progetto reale in corso, in coppia con `stack/01a-db-postgres.mdc` in `cursor-rules`: stessa forma dei gemelli MongoDB (checklist umano/agente, formato connection string). Nessuna sezione "percorso dev → produzione" in Fase 1 (a differenza di Mongo, Postgres è la stessa tecnologia in locale e produzione). Le migrazioni di produzione (`payload migrate`) si eseguono manualmente da locale contro l'ambiente di produzione, stesso pattern del seed di bootstrap già descritto in `fase-3-deploy.md` § 3.4 — nessuna modifica al master `fase-3-deploy.md`, che copre già questo pattern in generale. Passate a `stato: validato` dopo la revisione Composer sull'asse database in `cursor-rules` (nessuna contraddizione trovata). *(2026-09-13)*
+- **Rimossi i nomi di progetto dalla colonna "ultima scrittura/riuso confermato"** in tutte le righe della tabella "Catalogo varianti" (in precedenza indicavano il progetto di origine): la provenienza per progetto è ora tracciata in un file separato, fuori da questo repository, per evitare che nomi di progetti/clienti finiscano in un catalogo pensato per essere riutilizzabile senza portarsi dietro la storia di chi lo ha usato. *(2026-09-13)*
 
 ## Repository collegato
 
