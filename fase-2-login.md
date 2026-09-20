@@ -147,7 +147,7 @@ Segnalare questa sequenza non è una violazione del piano: è l'ordine di esecuz
 **Checklist**:
 
 - Costruire la pagina di login custom dell'Area App con bottone del provider SSO (2.5) **e** form email/password.
-- Verificare il flusso: ricerca utente per email → verifica password via strategia nativa Payload → verifica `active` → sessione. Se l'utente non ha password impostata (solo SSO) o la password non combacia, il fallimento deve essere naturale (nessun caso speciale da gestire esplicitamente).
+- Verificare il flusso: ricerca utente per email → verifica password → verifica `active` → sessione. **Se 2.4 usa `disableLocalStrategy` sulla collection `users`** (necessario per nascondere il form dall'Area Admin): l'operazione nativa di login Payload è bloccata per l'intera collection, non solo per l'Admin — questo form deve passare da un endpoint custom, non dall'operazione standard. Vedi il pattern completo in `payload-pattern/04-auth-locale-con-sso-esclusivo.mdc`. Se il progetto non usa `disableLocalStrategy`, la strategia nativa Payload resta l'opzione più semplice. In entrambi i casi, se l'utente non ha password impostata (solo SSO) o la password non combacia, il fallimento deve essere naturale (nessun caso speciale da gestire esplicitamente).
 - Il controllo identità/allow-list (2.2) **non si applica** al login locale: verificare che non venga richiamato per errore in questo percorso.
 - Messaggio di rifiuto identico a quello del flusso SSO in ogni caso di fallimento.
 
@@ -171,7 +171,7 @@ Segnalare questa sequenza non è una violazione del piano: è l'ordine di esecuz
 **Checklist**:
 
 - Creare la route `/admin/login/local` (o percorso equivalente), non linkata da nessuna UI standard di Payload né dell'App.
-- Deve usare la stessa strategia nativa di Payload per il login locale, non un sistema a parte.
+- **Se 2.4 usa `disableLocalStrategy` sulla collection `users`**: l'operazione nativa di login Payload è bloccata per l'intera collection, non disponibile nemmeno su questa route separata — implementarla con un endpoint custom secondo il pattern in `payload-pattern/04-auth-locale-con-sso-esclusivo.mdc`. Se il progetto non usa `disableLocalStrategy`, la strategia nativa Payload resta l'opzione più semplice.
 - Verificare che sia accessibile **solo** digitando l'URL direttamente, non tramite navigazione da `/admin/login`.
 - Scrivere la nota operativa interna che documenta l'esistenza e lo scopo di questa route, per chi gestirà il sistema — coerente con la regola di documentazione obbligatoria. Senza questa nota, la route rischia di essere dimenticata proprio nel momento in cui serve davvero.
 
@@ -214,6 +214,7 @@ Segnalare questa sequenza non è una violazione del piano: è l'ordine di esecuz
 - Popolare `activityLog` dall'hook `afterLogin` della collection `users` — si attiva indipendentemente da quale istanza/area ha autenticato, perché vive sulla collection e non sulla singola istanza del plugin/provider.
 - Popolare logout da hook `afterLogout`; accessi negati quando l'utente è identificato in `users`.
 - `area` e `method` derivano dal contesto della strategia/istanza che ha autenticato (identificatori distinti tra le istanze, 2.4/2.5, forniscono già questa informazione).
+- **Se 2.6/2.7 usano endpoint custom** (per via di `disableLocalStrategy`, vedi `payload-pattern/04-auth-locale-con-sso-esclusivo.mdc`): gli hook `afterLogin`/`afterLogout` non scattano da soli su quel percorso — verificare che l'endpoint li richiami esplicitamente, altrimenti `activityLog` resta silenziosamente incompleto per quei login.
 - **Non attivare ancora** i campi `collection`/`documentId` dello schema generale, né agganciare hook di logging ad altre collection: restano fuori scope finché una specifica di progetto non richiede esplicitamente di tracciare azioni CRUD su una collection specifica — coerente con `core/01-proporzionalita.mdc` (vedi `payload-pattern/03-log-azioni.mdc`, sezione "Attivazione: decisione di progetto, non default"). Non è un'omissione silenziosa: è la stessa distinzione meccanismo/attivazione descritta lì, applicata qui.
 
 ---
