@@ -12,7 +12,20 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Prerequisito**: Fase 1 chiusa (✅ su tutte le sottofasi in `fase-1-setup.md`).
 
-**Nota sull'ordine pratico**: l'ordine numerato sotto segue la logica della specifica. In pratica, per poter testare `/admin` fin da subito, conviene eseguire la sottofase **2.8 (seed super-admin)** subito dopo la **2.1 (collection users)**, prima ancora di completare l'integrazione del provider SSO — così si ha un modo di autenticarsi in Admin anche mentre il login SSO non è ancora pronto. Segnalare questa deviazione pratica non è una violazione del piano, è una sequenza di esecuzione più comoda a parità di passi.
+**Ordine di esecuzione consigliato** (diverso dall'ordine numerico — l'ordine numerato sotto segue la logica della specifica, per argomento, non la sequenza di esecuzione più comoda; confrontare con `fase-3-deploy.md`, che documenta lo stesso tipo di scarto per la propria fase):
+
+1. **2.1** (collection `users`) — nessuna dipendenza, primo passo.
+2. **2.2** (Global Settings, allow-list) — subito dopo 2.1, **popolata da subito con l'identità reale del progetto** (dominio Workspace o equivalente), non lasciata come meccanismo vuoto in attesa di 2.10: serve già pronta per chiudere il guardrail di 2.8 e per poter testare l'SSO in 2.4 non appena implementato.
+3. **2.8** (seed super-admin + guardrail) — dopo 2.2, non subito dopo 2.1: il guardrail "allow-list non salvabile se vuota" richiede che il Global esista già. **L'email del seed dev'essere un indirizzo realmente autenticabile con il provider SSO scelto per il progetto** (es. un account Google reale del dominio Workspace già in allow-list), non un placeholder — se il progetto usa SSO per l'Area Admin (il caso di default), questo stesso account sarà anche il primo con cui si verifica che l'SSO funzioni in 2.4.
+4. **2.7** (route locale di emergenza) — subito dopo 2.8, prima di procedere a 2.3/2.4. Necessaria perché 2.4 nasconde il form locale dalla vista standard di `/admin/login`: se 2.7 non esiste ancora a quel punto, non resta alcuna via di accesso locale nel frattempo.
+5. **2.3** (credenziali provider SSO) — passaggio esterno, come da checklist.
+6. **2.4** (SSO Admin) — a questo punto testabile subito dopo l'implementazione: allow-list reale (2.2), utente reale con `adminRole` (2.8), route di emergenza già pronta (2.7) come rete di sicurezza.
+7. **2.5** (SSO App) — segue 2.4.
+8. **2.6** (login locale App) — dopo 2.5.
+9. **2.9** (`activityLog`) — lo schema può partire in parallelo non appena 2.1 è chiusa, ma per popolare correttamente i campi `area`/`method` servono le istanze di 2.4/2.5 già attive.
+10. **2.10** (spike e2e finale) — ultimo: a questo punto la maggior parte dei singoli flussi è già stata verificata nei passaggi precedenti; qui si chiude il giro, incluso il login locale App di 2.6 non ancora testato prima.
+
+Segnalare questa sequenza non è una violazione del piano: è l'ordine di esecuzione consigliato a parità di passi, analogo a quanto già fatto per Fase 3.
 
 ---
 
@@ -21,6 +34,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Stato**: 🔲 da fare
 
 **Obiettivo**: unica collection `users` con lo schema definitivo dei ruoli, pronta ad accogliere sia utenti SSO sia utenti locali.
+
+**Dipende da**: Nessuna.
 
 > **Decisione documentata**: schema ruoli baseline (`adminRole`/`appRole` separati, non cumulabili) — vedi `ADR-001-schema-ruoli-baseline.md` (ADR di catalogo, in `cursor-payload-template` — non cercarla nella cartella ADR di questo progetto). Un progetto che estende l'enum di `appRole` non ridiscute questa ADR, la eredita; una deviazione dalla separazione stessa richiede una nuova ADR di progetto che la referenzi.
 
@@ -43,12 +58,15 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: allow-list delle identità autorizzate (domini, tenant, o equivalente a seconda del provider SSO scelto), gestita da pannello Admin, pronta a differenziare i permessi per area.
 
+**Dipende da**: 2.1 (l'access control in scrittura richiede il campo `adminRole`).
+
 **Checklist**:
 
 - Creare un Global (non una Collection) chiamato `Settings` o equivalente.
 - Campo array (non `hasMany` testuale) con sotto-campi: l'identificatore rilevante per il provider scelto (es. `domain` per Google Workspace) e flag per area (`allowAdmin`, `allowApp`).
 - Hook `beforeValidate`/`beforeChange`: trim, lowercase, validazione formato, prevenzione duplicati.
 - Access control in scrittura ristretto al solo ruolo `super-admin` (campo `adminRole`).
+- Popolare l'allow-list con l'identità reale del progetto (dominio Workspace o tenant equivalente) appena il Global è pronto — non lasciarla vuota in attesa dello spike di 2.10: serve già per chiudere il guardrail di 2.8 e per testare l'SSO in 2.4.
 - Non implementare ancora il guardrail "non salvabile se vuoto": è trattato in 2.8 insieme agli altri guardrail, per tenerli tutti in un unico posto.
 
 **Nota**: per il dettaglio specifico di cosa significa "identità autorizzata" per il provider scelto (dominio Workspace, tenant Azure AD, ecc.), vedi il file di variante auth corrispondente.
@@ -65,6 +83,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Stato**: 🔲 da fare
 
 **Obiettivo**: credenziali del provider SSO scelto pronte per l'integrazione.
+
+**Dipende da**: Nessuna (passaggio esterno, indipendente dal resto della fase).
 
 **Questo è un passaggio esterno a Cursor.** Seguire la regola dedicata in `core/02-processo-lavoro-agente.mdc`: non assumere che sia già stato fatto, fermarsi e attendere conferma.
 
@@ -84,6 +104,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: login tramite il provider SSO scelto funzionante su `/admin`, con validazione identità e whitelist-per-record.
 
+**Dipende da**: 2.2 (allow-list reale, non solo il meccanismo), 2.3 (credenziali), 2.7 (via di emergenza pronta prima di nascondere il form locale standard), 2.8 (utente reale con `adminRole` per poter testare senza autoprovisioning).
+
 > **Decisione documentata**: isolamento delle istanze SSO tra Admin e App — vedi `ADR-002-isolamento-istanze-sso.md` (ADR di catalogo, in `cursor-payload-template`).
 
 **Checklist di chiusura sottofase (valida per qualunque variante)**:
@@ -101,6 +123,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: login tramite il provider SSO scelto funzionante su `/app`, stessa logica dell'istanza Admin ma su configurazione distinta.
 
+**Dipende da**: 2.4 (stessa configurazione di base e stessa ADR di isolamento istanze).
+
 > **Decisione documentata**: stessa ADR di §2.4 — vedi `ADR-002-isolamento-istanze-sso.md` (ADR di catalogo, in `cursor-payload-template`).
 
 **Checklist di chiusura sottofase (valida per qualunque variante)**:
@@ -115,6 +139,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Stato**: 🔲 da fare
 
 **Obiettivo**: form locale funzionante sotto `/app`, con verifica password nativa e invio email di attivazione/reset gestito dal provider email scelto per il progetto.
+
+**Dipende da**: 2.5 (il bottone SSO sulla stessa pagina di login custom richiede l'istanza App già configurata).
 
 > **Decisione documentata**: login locale come opzione standard (non solo emergenza) per l'Area App — vedi `ADR-003-login-locale-app-default.md` (ADR di catalogo, in `cursor-payload-template`). Un progetto che vuole solo-SSO anche per l'App devia da questo default: richiede una nuova ADR di progetto che lo dichiari, non un'omissione silenziosa.
 
@@ -140,6 +166,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: via di accesso locale riservata al super-admin di bootstrap, non raggiungibile da alcun link visibile.
 
+**Dipende da**: 2.8 (la route serve il super-admin creato lì; va chiusa prima di 2.4, che nasconde il form locale dalla vista standard).
+
 **Checklist**:
 
 - Creare la route `/admin/login/local` (o percorso equivalente), non linkata da nessuna UI standard di Payload né dell'App.
@@ -155,9 +183,12 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 
 **Obiettivo**: primo super-admin creato in modo ripetibile, e i due vincoli minimi di sicurezza attivi.
 
+**Dipende da**: 2.1 (schema `users`), 2.2 (il guardrail anti-lista-vuota richiede che il Global esista già).
+
 **Checklist**:
 
 - Scrivere uno script di seed che crei un utente super-admin locale (email + password fornite come parametri o variabili d'ambiente, non hardcoded nel codice sorgente).
+- **Se il progetto usa un provider SSO per l'Area Admin (il caso di default)**: l'email del super-admin di bootstrap dev'essere un indirizzo realmente autenticabile con quel provider (es. per Google OAuth, un account Google reale del dominio Workspace già inserito in allow-list, 2.2) — non un placeholder. Il super-admin di bootstrap non è solo l'account per l'accesso locale di emergenza: è anche, di norma, il primo account con cui si verifica che l'SSO funzioni (2.4).
 - Implementare il vincolo: non è possibile eliminare o disattivare (`active = false`) l'ultimo super-admin locale rimasto — validazione applicativa sulla collection `users`.
 - Implementare il vincolo: non è possibile salvare l'allow-list identità (Global, 2.2) se risulterebbe vuota.
 - Implementare il vincolo: nessun altro utente Admin può essere creato con credenziali locali oltre al/ai super-admin di bootstrap — a livello di access control sulla collection.
@@ -170,6 +201,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Stato**: 🔲 da fare
 
 **Obiettivo**: log applicativo unico e condiviso tra Admin e App; eventi auth implementati: login, logout, accesso negato (con utente identificato).
+
+**Dipende da**: 2.1 (schema minimo per lo hook `afterLogin`/`afterLogout`); per popolare correttamente `area`/`method` servono anche 2.4 e 2.5 già attive.
 
 > **Meccanismo generale**: lo schema completo della collection `activityLog` e il pattern di popolamento via hook — inclusa la parte non legata all'auth (azioni CRUD su documenti, e perché non serve un log API separato: gli hook di collection intercettano già Local API/REST/GraphQL/Admin allo stesso modo) — sono definiti una volta sola in `payload-pattern/03-log-azioni.mdc`, non ripetuti qui. Questa sottofase **istanzia** quel meccanismo per gli eventi di autenticazione: i primi, e per questa fase gli unici, ad essere attivati.
 >
@@ -190,6 +223,8 @@ Aggiornare lo stato di ogni sottofase qui sotto e nel file indice `00-piano-gene
 **Stato**: 🔲 da fare
 
 **Obiettivo**: conferma pratica, non solo di codice, che il flusso di login funziona davvero nell'ambiente reale.
+
+**Dipende da**: 2.1–2.9 (tutte le sottofasi precedenti).
 
 **Questo passaggio richiede credenziali/ambiente reali (vedi 2.3) — coordinarsi con l'umano prima di eseguirlo.**
 
