@@ -41,14 +41,38 @@ Segnalare questa sequenza non è una violazione del piano: è l'ordine di esecuz
 
 **Checklist**:
 
-- Creare la collection `users` con i campi: `email` (text, required, unique — funge anche da username per il login locale), `adminRole` (select singolo: none/admin/super-admin), `appRole` (select singolo: none/[ruoli App del progetto]), `active` (checkbox, default true).
+- Creare la collection `users` con i campi: `email` (text, required, unique — funge anche da username per il login locale), `adminRole` (select singolo: none/admin/super-admin), `appRole` (select singolo: none/[ruoli App del progetto]), `active` (checkbox, **default false** — va selezionato esplicitamente in creazione, mai concesso implicitamente).
 - Non aggiungere un campo `roles` cumulativo unico: i due ruoli sono campi separati, non cumulabili all'interno della stessa area.
 - Il campo `password` è gestito nativamente da Payload (auth abilitata sulla collection): non ricostruire un meccanismo di hashing custom.
 - Implementare la validazione custom sul campo `password` secondo la policy password decisa per il progetto (Payload impone nativamente solo un minimo di 8 caratteri).
 - Campo `loginMethod` (o equivalente) che distingue **SSO esterno** da **locale**: tipicamente un Admin pannello userà sempre SSO, un utente App potrà usare SSO o locale a seconda della policy del progetto.
+- Vincolo di validazione: un utente con `adminRole ≠ none` non può avere `loginMethod: locale` — bloccante in creazione/modifica, non solo convenzione UI. Vedi `ADR-004-permessi-crud-utenti.md` (ADR di catalogo) e il pattern in `payload-pattern/04-auth-locale-con-sso-esclusivo.mdc`.
+- Se il progetto usa login locale per l'Area App (§2.6): aggiungere anche il campo `emailVerified` (checkbox, **default false**), aggiornato solo da hook di verifica — mai selezionabile a mano nel form Admin (vedi `fase-2-email-resend.md`, sezione Admin UX).
 - Non implementare in questa sottofase l'enforcement dei permessi per singola sezione App: è rimandato per natura allo sviluppo di quelle sezioni. Qui basta che lo schema di `appRole` sia corretto.
 - Scrivere comunque, fin da ora, lo stub di una funzione centralizzata di controllo permessi per sezione (es. `canAccessSection`), anche se nessuna sezione la richiama ancora — la collocazione fisica definitiva del file resta un punto aperto, da decidere solo quando si svilupperà la prima sezione App che la userà davvero, non ora.
 - Access control della collection: la creazione di utenti con credenziali locali va ristretta secondo la regola generale (vedi 2.8 più sotto e `auth/01-autenticazione-invarianti.mdc`) — non ogni utente può avere una password.
+
+> **Decisione documentata**: modello di permessi CRUD su `users` (vincolo admin≠locale, matrice ruoli, self-delete vietato per tutti) — vedi `ADR-004-permessi-crud-utenti.md` (ADR di catalogo, in `cursor-payload-template`). Pattern di implementazione (`access.create`/`access.update`/`access.delete`) in `payload-pattern/04-auth-locale-con-sso-esclusivo.mdc`.
+
+### Matrice dei casi di creazione utente
+
+| Caso | adminRole | appRole | loginMethod | Password/conferma | active/emailVerified | Vincolo |
+|---|---|---|---|---|---|---|
+| A — Solo Admin | admin/super-admin | none | SSO (obbligato) | nascosti | non rilevante | — |
+| B — Admin + anche utente App | admin/super-admin | ≠ none | SSO (obbligato per tutto il record) | nascosti | non rilevante | `loginMethod: locale` bloccato in validazione |
+| C — Solo App via SSO | none | ≠ none | SSO | nascosti | non rilevante | — |
+| D — Solo App locale | none | ≠ none | locale | **mostrati, obbligatori** | **da selezionare esplicitamente, default false** | unico caso con password |
+| E — Nessun ruolo | none | none | — | — | — | **bloccato in validazione**: un record senza alcun ruolo non ha accesso possibile |
+
+### Matrice permessi CRUD (ruolo dell'attore vs record target)
+
+| Azione | super-admin | admin | target = se stesso | target = super-admin |
+|---|---|---|---|---|
+| create | sì | sì (non può assegnare `adminRole: super-admin`) | — | — |
+| update | sì | sì | sempre permesso | solo se attore è super-admin |
+| delete | sì | sì | **mai, nessun ruolo** | solo se attore è super-admin, e non se è l'ultimo (guardrail 2.8, invariato) |
+
+Entrambe le matrici sono vincolanti per ogni progetto che eredita questo template, non un'opzione per-progetto — una deviazione richiede una nuova ADR di progetto che la referenzi, non un'omissione silenziosa.
 
 ---
 
@@ -238,6 +262,7 @@ Segnalare questa sequenza non è una violazione del piano: è l'ordine di esecuz
 5. Login locale su `/app` con un utente locale di test.
 6. Tentativo con un'identità non autorizzata (fuori allow-list) → verificare rifiuto con messaggio generico. Per il dettaglio di come si presenta questo scenario nel provider scelto, vedi il file di variante auth.
 7. Ripetere i punti rilevanti sull'ambiente di produzione, per verificare il comportamento del cookie httpOnly su HTTPS dietro proxy/load balancer, prima del rilascio definitivo — **da eseguire in Fase 3**, non qui: non bloccante per chiudere Fase 2.
+8. Verificare in Admin i 5 casi della matrice di creazione utente (§2.1) e la matrice permessi CRUD: un admin non-super non riesce a creare né a modificare un record con `adminRole: super-admin`, nessun ruolo riesce a eliminare se stesso, `active` ed `emailVerified` risultano deselezionati di default su un nuovo utente.
 
 **Non serve** un framework di test automatizzato per questo spike: è manuale, una tantum, in fase di sviluppo — non va rimandato al deploy né trasformato in un'infrastruttura di test permanente (coerente con `core/01-proporzionalita.mdc`).
 
@@ -255,4 +280,4 @@ Fuori scope di Fase 2 (salvo diversa indicazione della specifica di progetto): e
 
 ## Incoerenze note
 
-*(Nessuna al momento. Sezione per segnalare esplicitamente contraddizioni o ambiguità non risolte tra questo file e altri — vedi `processo-v2-operativo.md` §3, Balzer 1991.)*
+- **§2.1 vs comportamento Admin UI con `disableLocalStrategy`**: §2.1 descrive il campo `password` come "gestito nativamente da Payload" senza distinguere schema da UI. Se il progetto usa `disableLocalStrategy` (`payload-pattern/04-auth-locale-con-sso-esclusivo.mdc`), il componente Admin nativo (`AuthFields`) risulta nascondere il campo password in create/update per l'intera collection, indipendentemente da `enableFields` — in apparente contraddizione con il pattern già collaudato nello stesso file (verificato su un progetto reale diverso). **Non risolto**: verificare su un progetto reale con la versione di Payload in uso prima di modificare `04-auth-locale-con-sso-esclusivo.mdc` su questo punto.
